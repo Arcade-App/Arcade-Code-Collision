@@ -1,0 +1,16 @@
+[package]
+name = "tourn8"
+version = "1.0.0"
+authors = []
+
+[addresses]
+tourn8_addr='0xf34803cc73b099b1a5b4a6d395ec19a2a282cb8467bde41f684da65321134348'
+
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
