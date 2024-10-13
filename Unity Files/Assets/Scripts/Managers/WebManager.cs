@@ -65,6 +65,7 @@ public class WebManager : MonoBehaviour
         if (ValidateInput(username, email, password))
         {
             Debug.Log("Register User: " + "Username: " + username + " Email: " + email + " Password: " + password);
+            
             // Start the coroutine to register the user
             StartCoroutine(RegisterUserCoroutine(username, email, password));
         }
@@ -85,6 +86,7 @@ public class WebManager : MonoBehaviour
         if (string.IsNullOrWhiteSpace(username) || username.Length < 3)
         {
             Debug.LogError("Username must be at least 3 characters long.");
+            Manager.instance.canvasManager.ShowErrorPopup("Username must be at least 3 characters long.");
             return false;
         }
 
@@ -92,6 +94,7 @@ public class WebManager : MonoBehaviour
         if (string.IsNullOrWhiteSpace(email) || !IsValidEmail(email))
         {
             Debug.LogError("Please enter a valid email address.");
+            Manager.instance.canvasManager.ShowErrorPopup("Please enter a valid email address.");
             return false;
         }
 
@@ -99,6 +102,7 @@ public class WebManager : MonoBehaviour
         if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
         {
             Debug.LogError("Password must be at least 6 characters long.");
+            Manager.instance.canvasManager.ShowErrorPopup("Password must be at least 6 characters long.");
             return false;
         }
 
@@ -136,6 +140,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -167,6 +173,8 @@ public class WebManager : MonoBehaviour
                 {
                     // Handle error response from the server
                     Debug.LogError("Registration failed: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Registration failed: " + responseData.message);
+
                 }
             }
         }
@@ -188,6 +196,8 @@ public class WebManager : MonoBehaviour
             {
                 // Display network error
                 Debug.LogError("Connection error: " + www.error);
+                Manager.instance.canvasManager.ShowErrorPopup("Connection error: " + www.error);
+
                 // Optionally display error in UI
                 // errorMessageText.text = "Connection error: " + www.error;
             }
@@ -234,6 +244,8 @@ public class WebManager : MonoBehaviour
                 {
                     // Show the error message from the server
                     Debug.LogError("Login failed: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Login failed: " + responseData.message);
+
                     // Optionally display error in UI
                     // errorMessageText.text = "Login failed: " + responseData.message;
                 }
@@ -269,6 +281,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -287,6 +301,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error updating user wallet information: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error updating user wallet information: " + responseData.message);
+
                 }
             }
         }
@@ -302,6 +318,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -328,6 +346,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to fetch Tournament Manager Address: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to fetch Tournament Manager Address: " + responseData.message);
+
                 }
             }
         }
@@ -383,6 +403,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -404,6 +426,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to store game data: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to store game data: " + responseData.message);
+
                 }
             }
         }
@@ -434,6 +458,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -555,6 +581,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -576,6 +604,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to store tournament data: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to store tournament data: " + responseData.message);
+
                 }
             }
         }
@@ -603,6 +633,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -656,6 +688,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to fetch tournaments: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to fetch tournaments: " + responseData.message);
+
                 }
             }
         }
@@ -700,6 +734,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -743,6 +779,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to fetch games: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to fetch games: " + responseData.message);
+
                 }
             }
         }
@@ -781,6 +819,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -833,6 +873,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to fetch tournaments: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to fetch tournaments: " + responseData.message);
+
                 }
             }
         }
@@ -885,6 +927,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -938,6 +982,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to fetch tournament details: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to fetch tournament details: " + responseData.message);
+
                 }
             }
         }
@@ -986,6 +1032,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1036,6 +1084,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to fetch tournament scores: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to fetch tournament scores: " + responseData.message);
+
                 }
             }
         }
@@ -1068,6 +1118,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1085,6 +1137,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Failed to store/update score: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Failed to store/update score: " + responseData.message);
+
                 }
             }
         }
@@ -1112,6 +1166,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1138,6 +1194,7 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error: " + responseData.message + " for GameId: " + gameId);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error: " + responseData.message + " for GameId: " + gameId);
 
                 }
             }
@@ -1162,6 +1219,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1183,6 +1242,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error fetching or creating score: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error fetching or creating score: " + responseData.message);
+
                     yield return new WaitForSeconds(2f);
 
                 }
@@ -1212,6 +1273,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
                 yield return new WaitForSeconds(2f);
 
             }
@@ -1235,6 +1298,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error adding score: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error adding score: " + responseData.message);
+
                     yield return new WaitForSeconds(2f);
 
                 }
@@ -1257,6 +1322,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1275,6 +1342,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error updating play count: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error updating play count: " + responseData.message);
+
                 }
             }
         }
@@ -1294,6 +1363,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1324,6 +1395,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error: " + responseData.message);
+
                 }
             }
         }
@@ -1344,6 +1417,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1364,6 +1439,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error: " + responseData.message);
+
                     yield return new WaitForSeconds(2f);
                 }
             }
@@ -1385,6 +1462,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1403,6 +1482,8 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error: " + responseData.message);
+
                 }
             }
         }
@@ -1423,6 +1504,8 @@ public class WebManager : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError("Error: " + www.error); // Log any error messages
+                Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
+
             }
             else
             {
@@ -1442,6 +1525,7 @@ public class WebManager : MonoBehaviour
                 else
                 {
                     Debug.LogError("Error: " + responseData.message);
+                    Manager.instance.canvasManager.ShowErrorPopup("Error: " + www.error);
                 }
             }
         }

@@ -149,6 +149,7 @@ public class CanvasManager : MonoBehaviour
     [Space(5)]
     public GameObject liveTournamentPanelGO;
     public GameObject liveTournamentConfirmationPanelGO;
+    public TMP_Text liveTournamentConfirmationPanelBalanceText;
 
     [Space(5)]
     public Image liveTournamentButtonImage;
@@ -171,9 +172,11 @@ public class CanvasManager : MonoBehaviour
     public GameObject liveTournamentJoinButtonPaidGO;
     public TMP_Text liveTournamentJoinButtonPaidText;
 
+    public GameObject joinLiveTournamentButtonGO;
     public TMP_Text liveTournamentPlayButtonFreeText;
     public GameObject liveTournamentPlayButtonPaidGO;
     public TMP_Text liveTournamentPlayButtonPaidText;
+    public GameObject playAgainLiveTournamentButtonGO;
 
 
 
@@ -306,6 +309,8 @@ public class CanvasManager : MonoBehaviour
 
     [Space(5)]
     public GameObject gameSharePanelGO;
+    public Image gameShareGameIcon;
+    public TMP_Text gameShareGameNameText;
 
 
     [Space(10)]
@@ -375,6 +380,8 @@ public class CanvasManager : MonoBehaviour
 
     [Space(5)]
     public List<GameObject> profileMyGamesButtonGOList = new List<GameObject>();
+    public GameObject profileMyGamesEmptyButton;
+
 
     [Space(5)]
     public GameObject profileTournamentButtonGO;
@@ -383,6 +390,7 @@ public class CanvasManager : MonoBehaviour
     public Image profileTournamentImage;
     public Image profileTournamentButtonImage;
     public TMP_Text profileTournamentButtonTimeReaminingText;
+    public GameObject profileTournamentEmptyButtonGO;
 
     [Space(5)]
     public GameObject profilePanelMyTournamentsPanelGO;
@@ -399,6 +407,10 @@ public class CanvasManager : MonoBehaviour
     public GameObject systemBarGO;
 
 
+    [Space(10)]
+    [Header("Error Pop-up")]
+    public GameObject errorPopupGameObject;
+    public TMP_Text errorPopupText;
 
 
     //RENAME AND COMMENT FUNCTIONS BASED ON USERFLOW AND SECTIONS
@@ -465,6 +477,8 @@ public class CanvasManager : MonoBehaviour
 
         systemBarGO.SetActive(true);
 
+        errorPopupGameObject.SetActive(false);
+
         //Disabling Games
         Manager.instance.gameManager.game1Parent.SetActive(false);
 
@@ -511,6 +525,8 @@ public class CanvasManager : MonoBehaviour
     public void SetUIAptosBalance()
     {
         aptosBalanceText.text = TruncateToTwoDecimalPlaces(Manager.instance.userInfoManager.walletBalanceFloat) + " APT";
+        profileWalletBalanceText.text = TruncateToTwoDecimalPlaces(Manager.instance.userInfoManager.walletBalanceFloat) + " APT";
+
     }
 
     public void OnStartPanelCreateAccountClicked()
@@ -953,6 +969,9 @@ public class CanvasManager : MonoBehaviour
             createToggle.interactable = true;
             profileToggle.interactable = true;
 
+
+            //Get current wallet balance
+            Manager.instance.walletManager.LoadCurrentWalletBalance();
 
             //Set the Popular Games on the Home Panel
             // - Get list of all games sorted by playCount
@@ -1521,26 +1540,42 @@ public class CanvasManager : MonoBehaviour
         liveTournamentButtonImage.color = tournamentColor;
 
         liveTournamentButtonPlayingText.text = userCount + " playing";      
-        liveTournamentButtonPrizeText.text = prizePool + " APT Prize";
+        liveTournamentButtonPrizeText.text = TruncateToTwoDecimalPlaces(prizePool) + " APT Prize";
 
-        if(playerJoiningFee != 0)
+
+        //Check if tournamentId is in Joined tournament List, if yes, show Play Again Button
+        if (Manager.instance.tournamentDataManager.joinedTournamentIdList.Contains(tournamentId))
         {
-            liveTournamentJoinButtonPaidText.text = playerJoiningFee + " APT";
-            liveTournamentJoinButtonPaidGO.SetActive(true);
-            liveTournamentJoinButtonFreeText.gameObject.SetActive(false);
-
-            liveTournamentPlayButtonPaidText.text = playerJoiningFee + " APT";
-            liveTournamentPlayButtonPaidGO.SetActive(true);
-            liveTournamentPlayButtonFreeText.gameObject.SetActive(false);
+            joinLiveTournamentButtonGO.SetActive(false);
+            playAgainLiveTournamentButtonGO.SetActive(true);
         }
         else
         {
-            liveTournamentJoinButtonPaidGO.SetActive(false);
-            liveTournamentJoinButtonFreeText.gameObject.SetActive(true);
+            joinLiveTournamentButtonGO.SetActive(true);
+            playAgainLiveTournamentButtonGO.SetActive(false);
 
-            liveTournamentPlayButtonPaidGO.SetActive(false);
-            liveTournamentPlayButtonFreeText.gameObject.SetActive(true);
+            if (playerJoiningFee != 0)
+            {
+                liveTournamentJoinButtonPaidText.text = TruncateToTwoDecimalPlaces(playerJoiningFee) + " APT";
+                liveTournamentJoinButtonPaidGO.SetActive(true);
+                liveTournamentJoinButtonFreeText.gameObject.SetActive(false);
+
+                liveTournamentPlayButtonPaidText.text = playerJoiningFee + " APT";
+                liveTournamentPlayButtonPaidGO.SetActive(true);
+                liveTournamentPlayButtonFreeText.gameObject.SetActive(false);
+            }
+            else
+            {
+                liveTournamentJoinButtonPaidGO.SetActive(false);
+                liveTournamentJoinButtonFreeText.gameObject.SetActive(true);
+
+                liveTournamentPlayButtonPaidGO.SetActive(false);
+                liveTournamentPlayButtonFreeText.gameObject.SetActive(true);
+            }
+
         }
+
+
 
         liveTournamentButtonEndTimeText.text = endingIn;
         hostedByButtonText.text = "Hosted By: <color=#42EFEC><u>" + tournamentHostName + "</u></color>";      
@@ -1583,6 +1618,10 @@ public class CanvasManager : MonoBehaviour
 
     public void OnLiveTournamentJoinButtonClicked()
     {
+
+        //Show confirmation pop-up text balance
+        liveTournamentConfirmationPanelBalanceText.text = TruncateToTwoDecimalPlaces(Manager.instance.userInfoManager.walletBalanceFloat) + " APT";
+
         //Show the confirmation popup
         // - open popupp go
         liveTournamentConfirmationPanelGO.SetActive(true);
@@ -2116,6 +2155,9 @@ public class CanvasManager : MonoBehaviour
             createToggle.interactable = true;
             profileToggle.interactable = false;
 
+            //Get current wallet balance
+            Manager.instance.walletManager.LoadCurrentWalletBalance();
+
             StartCoroutine(SetProfileInfo());
 
             profileScrollRect.verticalNormalizedPosition = 1f;
@@ -2181,7 +2223,7 @@ public class CanvasManager : MonoBehaviour
     //Update url to that of Arcade's Twitter Account
     public void OnFollowUsOnXClicked()
     {
-        string twitterFollowUrl = "https://x.com/intent/follow?screen_name=KshitijGajapure";
+        string twitterFollowUrl = "https://x.com/intent/follow?screen_name=arcadedotapp";
         Application.OpenURL(twitterFollowUrl);
     }
 
@@ -2532,6 +2574,7 @@ public class CanvasManager : MonoBehaviour
 
     public void OnCreateGameNameSaveBackClicked()
     {
+        addGameNameInputFieldLegacy.text = null;
         addGameNamePanelGO.SetActive(false);
     }
 
@@ -2539,8 +2582,16 @@ public class CanvasManager : MonoBehaviour
     {
         //Call after successful server data save from the webManager script
         gameSharePanelGO.SetActive(true);
+
+        //Set Game Icon
+        //Set Game Name
+
+        gameShareGameIcon.sprite = Manager.instance.gameDataManager.gameTemplateImageList[Manager.instance.gameDataManager.gameTemplateId];
+        gameShareGameNameText.text = Manager.instance.gameDataManager.gameGameName;
+
         selectGameOverAudioPanelGO.SetActive(false);
         addGameNamePanelGO.SetActive(false);
+
     }
 
 
@@ -2768,6 +2819,7 @@ public class CanvasManager : MonoBehaviour
 
     public void OnTournamentDetailsNextClicked()
     {
+        //code to save tournament name, host name, social link, start date, start time, end dat, end time data in TournamentDataManager
 
         Manager.instance.tournamentDataManager.tournamentName = tournamentNameInputFieldLegacy.text;
         Manager.instance.tournamentDataManager.tournamentHostName = hostNameInputFieldLegacy.text;
@@ -2782,7 +2834,14 @@ public class CanvasManager : MonoBehaviour
         Manager.instance.tournamentDataManager.startTime = ConvertTimeToInt(startDateInputField.text, startTimeText.text);
         Manager.instance.tournamentDataManager.endTime = ConvertTimeToInt(endDateInputField.text, endTimeText.text);
 
-        //code to save tournament name, host name, social link, start date, start time, end dat, end time data in TournamentDataManager
+        tournamentNameInputFieldLegacy.text = null;
+        hostNameInputFieldLegacy.text = null;
+        socialLinkInputFieldLegacy.text = null;
+        playerJoiningFeeInputFieldLegacy.text = null;
+        startDateInputField.text = null;
+        startTimeText.text = null;
+        endDateInputField.text = null;
+        endTimeText.text = null;
 
         tournamentDetailsPanelGO.SetActive(false);
         prizeDetailsPanelGO.SetActive(true);
@@ -2860,6 +2919,7 @@ public class CanvasManager : MonoBehaviour
             else
             {
                 Debug.LogError("Invalid prize pool input. Please enter a valid number.");
+                Manager.instance.canvasManager.ShowErrorPopup("Invalid prize pool input. Please enter a valid number.");
             }
 
             prizeDetailsNextButtonText.color = inputFieldFilledButtonTextColor;
@@ -2944,6 +3004,9 @@ public class CanvasManager : MonoBehaviour
 
         //reset prize details panel
         prizePoolAmountInputFieldLegacy.text = null;
+        winnerAmountInputFieldLegacy.text = null;
+        runnerUpAmountInputFieldLegacy.text = null;
+        secondRunnerUpAmountInputFieldLegacy.text = null;
 
         //disable prize details panel and confirmation panel 
         prizeDetailsPanelGO.SetActive(false);
@@ -2986,18 +3049,32 @@ public class CanvasManager : MonoBehaviour
         // Get the count of games, but limit to a maximum of 3
         int maxGames = Mathf.Min(Manager.instance.gameDataManager.userGameIdList.Count, 3);
 
-        for (int i = 0; i < maxGames; i++)
+        if (maxGames == 0)
         {
+            for (int i = 0; i < 3; i++)
+            {
+                profileMyGamesButtonGOList[i].SetActive(false);
+                profileMyGamesEmptyButton.SetActive(true);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < maxGames; i++)
+            {
+                profileMyGamesEmptyButton.SetActive(false);
 
-            int userGameTemplateIdInt = Manager.instance.gameDataManager.userGameTemplateIdList[i];
-            profileMyGamesButtonGOList[i].GetComponent<Image>().sprite = Manager.instance.gameDataManager.gameTemplateImageList[userGameTemplateIdInt];
-            profileMyGamesButtonGOList[i].GetComponentInChildren<TMP_Text>().text = Manager.instance.gameDataManager.userGameNameList[i];
+                int userGameTemplateIdInt = Manager.instance.gameDataManager.userGameTemplateIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<Image>().sprite = Manager.instance.gameDataManager.gameTemplateImageList[userGameTemplateIdInt];
+                profileMyGamesButtonGOList[i].GetComponentInChildren<TMP_Text>().text = Manager.instance.gameDataManager.userGameNameList[i];
 
-            profileMyGamesButtonGOList[i].SetActive(true);            
+                profileMyGamesButtonGOList[i].SetActive(true);
 
+            }
+
+            yield return null;
         }
 
-        yield return null;
+
     }
 
 
@@ -3140,6 +3217,8 @@ public class CanvasManager : MonoBehaviour
         if(tournamentDataListLength != 0)
         {
 
+
+            profileTournamentEmptyButtonGO.SetActive(false);
             profileTournamentButtonGO.SetActive(true);
 
 
@@ -3170,12 +3249,46 @@ public class CanvasManager : MonoBehaviour
             profileTournamentImage.sprite = Manager.instance.gameDataManager.gameTemplateImageList[Manager.instance.tournamentDataManager.gameTemplateId];
             profileTournamentButtonImage.color = Manager.instance.gameDataManager.gameTemplateColorList[Manager.instance.tournamentDataManager.gameTemplateId];
         }
+        else
+        {
+            profileTournamentButtonGO.SetActive(false);
+            profileTournamentEmptyButtonGO.SetActive(true);
+        }
 
 
 
     }
 
+    public void OnProfileEmptyCreateGameButtonClicked()
+    {
+        profilePanelGO.SetActive(false);
+        profilePanelHomeGO.SetActive(false);
 
+        profileToggleOnLabelGO.SetActive(false);
+        profileToggleOffLabelGO.SetActive(true);
+
+        createToggle.isOn = true;
+        OnCreateToggleChanged();
+
+        OnCreateGameButtonClicked();
+
+    }
+
+
+    public void OnProfileEmptyCreateTournamentButtonClicked()
+    {
+        profilePanelGO.SetActive(false);
+        profilePanelHomeGO.SetActive(false);
+
+        profileToggleOnLabelGO.SetActive(false);
+        profileToggleOffLabelGO.SetActive(true);
+
+        createToggle.isOn = true;
+        OnCreateToggleChanged();
+
+        OnCreateTournamentButtonClicked();
+
+    }
 
     // Method to calculate the event status and remaining time
     public string GetEventStatus(string startDate, string startTime, string endDate, string endTime)
@@ -3229,6 +3342,8 @@ public class CanvasManager : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogError("Error calculating event status: " + ex.Message);
+            ShowErrorPopup("Error calculating event status: " + ex.Message);
+
             return "Invalid input";
         }
     }
@@ -3237,11 +3352,37 @@ public class CanvasManager : MonoBehaviour
     // Method to truncate the float to two decimal places
     public string TruncateToTwoDecimalPlaces(float value)
     {
-        // Multiply by 100, cast to int to truncate, then divide by 100 again
-        float truncatedValue = Mathf.Floor(value * 100f) / 100f;
 
-        // Return the result as a string with 2 decimal places
-        return truncatedValue.ToString("F2");
+        // Check if the float is a whole number
+        if (value == Mathf.Floor(value))
+        {
+            // Return the integer part if it's a whole number
+            return ((int)value).ToString();
+        }
+        else
+        {
+            // Multiply by 100, cast to int to truncate, then divide by 100 again
+            float truncatedValue = Mathf.Floor(value * 100f) / 100f;
+
+            // Return the result as a string with 2 decimal places
+            return truncatedValue.ToString("F2");
+        }
+
     }
+
+
+    public void ShowErrorPopup(string message)
+    {
+        errorPopupText.text = message;
+        errorPopupGameObject.SetActive(true);
+        StartCoroutine(DisablePopupAfterDelay(5f));
+    }
+
+    private IEnumerator DisablePopupAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        errorPopupGameObject.SetActive(false);
+    }
+
 
 }

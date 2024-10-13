@@ -88,17 +88,17 @@ public class GameManager : MonoBehaviour
         if (tournament)
         {
             isTournament = tournament;
-            if (Manager.instance.tournamentDataManager.gameTemplateId == 0)
+            if (Manager.instance.gameDataManager.gameTemplateId == 0)
             {
                 //Do Game1 Stuff
                 SetGame1Customizable();
             }
-            else if (Manager.instance.tournamentDataManager.gameTemplateId == 1)
+            else if (Manager.instance.gameDataManager.gameTemplateId == 1)
             {
                 //Do Game2 Stuff
                 SetGame2Customizable();
             }
-            else if (Manager.instance.tournamentDataManager.gameTemplateId == 2)
+            else if (Manager.instance.gameDataManager.gameTemplateId == 2)
             {
                 //Do Game3 Stuff
             }
@@ -675,6 +675,7 @@ public class GameManager : MonoBehaviour
             Manager.instance.canvasManager.homeProfileTournamentCreatePanelGO.SetActive(true);
             Manager.instance.canvasManager.tournamentPanelGO.SetActive(true);
             Manager.instance.canvasManager.tournamentPanelHomeGO.SetActive(true);
+            Manager.instance.canvasManager.tournamentToggle.isOn = true;
         }
         else
         {
@@ -682,6 +683,7 @@ public class GameManager : MonoBehaviour
             Manager.instance.canvasManager.homeProfileTournamentCreatePanelGO.SetActive(true);
             Manager.instance.canvasManager.homePanelGO.SetActive(true);
             Manager.instance.canvasManager.homePanelHomeGO.SetActive(true);
+            Manager.instance.canvasManager.homeToggle.isOn = true;
         }
 
     }
@@ -704,6 +706,8 @@ public class GameManager : MonoBehaviour
             Manager.instance.canvasManager.homeProfileTournamentCreatePanelGO.SetActive(true);
             Manager.instance.canvasManager.tournamentPanelGO.SetActive(true);
             Manager.instance.canvasManager.tournamentPanelHomeGO.SetActive(true);
+            Manager.instance.canvasManager.tournamentToggle.isOn = true;
+
         }
         else
         {
@@ -711,6 +715,8 @@ public class GameManager : MonoBehaviour
             Manager.instance.canvasManager.homeProfileTournamentCreatePanelGO.SetActive(true);
             Manager.instance.canvasManager.homePanelGO.SetActive(true);
             Manager.instance.canvasManager.homePanelHomeGO.SetActive(true);
+            Manager.instance.canvasManager.homeToggle.isOn = true;
+
         }
 
     }

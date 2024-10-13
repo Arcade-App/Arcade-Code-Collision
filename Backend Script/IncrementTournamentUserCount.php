@@ -18,8 +18,8 @@ if (!$tournamentId) {
     exit();
 }
 
-// Prepare the SQL statement to fetch current playCount, prizePool, and playerJoiningFee for the specified tournamentId
-$stmt = $conn->prepare("SELECT playCount, prizePool, playerJoiningFee FROM tournaments WHERE tournamentId = ?");
+// Prepare the SQL statement to fetch current userCount, prizePool, and playerJoiningFee for the specified tournamentId
+$stmt = $conn->prepare("SELECT userCount, prizePool, playerJoiningFee FROM tournaments WHERE tournamentId = ?");
 if (!$stmt) {
     echo json_encode(array("status" => "error", "message" => "Failed to prepare the SQL statement."));
     exit();
@@ -27,36 +27,36 @@ if (!$stmt) {
 
 $stmt->bind_param("i", $tournamentId);
 $stmt->execute();
-$stmt->bind_result($playCount, $prizePool, $playerJoiningFee);
+$stmt->bind_result($userCount, $prizePool, $playerJoiningFee);
 
 // Check if the tournament entry exists
 if ($stmt->fetch()) {
-    // Increment playCount and increase prizePool by playerJoiningFee
-    $newPlayCount = $playCount + 1;
+    // Increment userCount and increase prizePool by playerJoiningFee
+    $newUserCount = $userCount + 1;
     $newPrizePool = $prizePool + $playerJoiningFee;
 
     // Close the previous statement
     $stmt->close();
 
-    // Prepare the SQL statement to update playCount and prizePool
-    $updateStmt = $conn->prepare("UPDATE tournaments SET playCount = ?, prizePool = ? WHERE tournamentId = ?");
+    // Prepare the SQL statement to update userCount and prizePool
+    $updateStmt = $conn->prepare("UPDATE tournaments SET userCount = ?, prizePool = ? WHERE tournamentId = ?");
     if (!$updateStmt) {
         echo json_encode(array("status" => "error", "message" => "Failed to prepare the SQL statement for update."));
         exit();
     }
 
-    $updateStmt->bind_param("idi", $newPlayCount, $newPrizePool, $tournamentId);
+    $updateStmt->bind_param("idi", $newUserCount, $newPrizePool, $tournamentId);
 
     if ($updateStmt->execute()) {
-        // Respond with success message and the updated playCount and prizePool
+        // Respond with success message and the updated userCount and prizePool
         echo json_encode(array(
             "status" => "success",
-            "message" => "Play count and prize pool updated successfully.",
-            "newPlayCount" => $newPlayCount,
+            "message" => "User count and prize pool updated successfully.",
+            "newUserCount" => $newUserCount,
             "newPrizePool" => $newPrizePool
         ));
     } else {
-        echo json_encode(array("status" => "error", "message" => "Failed to update play count and prize pool."));
+        echo json_encode(array("status" => "error", "message" => "Failed to update user count and prize pool."));
     }
 
     $updateStmt->close();

@@ -39,11 +39,6 @@ public class WalletManager : MonoBehaviour
         onGetWalletBalance += UpdateWalletBalance;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void SetTournamentManagerData(string tournamentManagerAddress, string tournamentContractName)
     {
@@ -164,6 +159,8 @@ public class WalletManager : MonoBehaviour
         Manager.instance.userInfoManager.walletBalanceFloat = AptosTokenToFloat(_amount);
         Debug.Log("Debug 18: Getting userInfoManager walletBalanceFloat: " + AptosTokenToFloat(_amount));
 
+        Manager.instance.canvasManager.SetUIAptosBalance();
+
     }
 
     public float AptosTokenToFloat(float _token)
@@ -227,6 +224,9 @@ public class WalletManager : MonoBehaviour
             Debug.Log(responseInfo?.message ?? "Failed to start the tournament.");
         }
 
+        LoadCurrentWalletBalance();
+
+
         // Optionally wait for a short time before continuing
         yield return new WaitForSeconds(1f);
 
@@ -240,6 +240,8 @@ public class WalletManager : MonoBehaviour
         else
         {
             Debug.LogError("Transaction failed or hash is null.");
+            Manager.instance.canvasManager.ShowErrorPopup("Transaction failed or hash is null.");
+
         }
     }
 
@@ -318,6 +320,9 @@ public class WalletManager : MonoBehaviour
             Debug.Log(responseInfo?.message ?? "Failed to enter the tournament.");
         }
 
+        LoadCurrentWalletBalance();
+
+
         // Optionally wait for a short time before continuing
         yield return new WaitForSeconds(1f);
 
@@ -330,6 +335,8 @@ public class WalletManager : MonoBehaviour
         else
         {
             Debug.LogError("Transaction failed or hash is null.");
+            Manager.instance.canvasManager.ShowErrorPopup("Transaction failed or hash is null.");
+
         }
     }
 
@@ -395,8 +402,12 @@ public class WalletManager : MonoBehaviour
             Debug.Log(responseInfo?.message ?? "Failed to record the score.");
         }
 
+        LoadCurrentWalletBalance();
+
+
         // Optionally wait for a short time before continuing
         yield return new WaitForSeconds(1f);
+
 
         // Log or handle the transaction hash
         string transactionHash = recordScoreTxn?.Hash;
@@ -407,6 +418,8 @@ public class WalletManager : MonoBehaviour
         else
         {
             Debug.LogError("Transaction failed or hash is null.");
+            Manager.instance.canvasManager.ShowErrorPopup("Transaction failed or hash is null.");
+
         }
     }
 
