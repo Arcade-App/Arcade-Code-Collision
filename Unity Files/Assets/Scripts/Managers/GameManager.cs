@@ -65,6 +65,15 @@ public class GameManager : MonoBehaviour
     //public Game1CameraMovement game2CameraMovement;  //No Camera Movement in Game2
     public bool isGame2Over = false;
 
+    [Header("Game 3")]
+    public GameObject game3Parent;
+    public GameObject game3GameManagerGO;
+    public Game3Manager game3Manager;
+    public GameObject game3BackgroundGO;
+    public SpriteRenderer game3BackgroundSpriteRenderer;
+    public AudioSource game3BackgroundAudioSource;
+    public bool isGame3Over = false;
+
 
     [Header("Customizables")]
     public Sprite playerSprite;
@@ -85,6 +94,9 @@ public class GameManager : MonoBehaviour
     public void OnCanvasGameSelectedPlayClicked(bool tournament)
     {
 
+        totalScore = 0;
+        currentScore = 0;
+
         if (tournament)
         {
             isTournament = tournament;
@@ -101,6 +113,7 @@ public class GameManager : MonoBehaviour
             else if (Manager.instance.gameDataManager.gameTemplateId == 2)
             {
                 //Do Game3 Stuff
+                SetGame3Customizable();
             }
 
         }
@@ -120,6 +133,7 @@ public class GameManager : MonoBehaviour
             else if (Manager.instance.gameDataManager.gameTemplateId == 2)
             {
                 //Do Game3 Stuff
+                SetGame3Customizable();
             }
 
         }
@@ -208,7 +222,10 @@ public class GameManager : MonoBehaviour
 
         foreach (Transform childTransform in game2ObstacleParentGO.transform)
         {
-            childTransform.gameObject.GetComponent<SpriteRenderer>().color = gam2ObstacleColorArray[Manager.instance.gameDataManager.gameBackgroundId];
+            foreach (Transform childChildTransform  in childTransform)
+            {
+                childChildTransform.gameObject.GetComponent<SpriteRenderer>().color = gam2ObstacleColorArray[Manager.instance.gameDataManager.gameBackgroundId];
+            }
         }
 
         uiStartBGImageArray[1].sprite = backgroundSprite;
@@ -228,6 +245,54 @@ public class GameManager : MonoBehaviour
         uiGameOverPanelGOArray[1].SetActive(false);
 
         isGame2Over = false;
+        currentScore = 0;
+    }
+
+
+    public void SetGame3Customizable()
+    {
+
+        uiGameIconImageArray[2].sprite = Manager.instance.gameDataManager.gameTemplateImageList[Manager.instance.gameDataManager.gameTemplateId];
+        uiGameIconTitleTextArray[2].text = Manager.instance.gameDataManager.gameGameName;
+
+        if (isTournament)
+        {
+            totalScore = Manager.instance.userInfoManager.tournamentScore;
+        }
+        else
+        {
+            totalScore = Manager.instance.userInfoManager.gameScore;
+        }
+
+        uiTitleTotalScoreTextArray[2].text = totalScore.ToString();
+
+        //Storing the sprites from template
+        playerSprite = Manager.instance.canvasManager.selectFaceSpriteArray[Manager.instance.gameDataManager.gameFaceId];
+        backgroundSprite = Manager.instance.canvasManager.selectBackgroundSpriteArray[Manager.instance.gameDataManager.gameBackgroundId];
+        playerJumpAudioClip = Manager.instance.canvasManager.selectJumpAudioClipArray[Manager.instance.gameDataManager.gameJumpAudioId];
+        backgroundAudioClip = Manager.instance.canvasManager.selectBGAudioClipArray[Manager.instance.gameDataManager.gameBGAudioId];
+        gameOverAudioClip = Manager.instance.canvasManager.selectGameOverAudioClipArray[Manager.instance.gameDataManager.gameGameOverAudioId];
+
+
+        //Sprites
+        game3BackgroundSpriteRenderer.sprite = backgroundSprite;
+        uiStartBGImageArray[2].sprite = backgroundSprite;
+        uiGameOverBGImageArray[2].sprite = backgroundSprite;
+
+
+        //Background Audio
+        game3BackgroundAudioSource.clip = backgroundAudioClip;
+
+
+        game3Manager.goodMoleAudioClip = playerJumpAudioClip;
+        game3Manager.badMoleAudioClip = gameOverAudioClip;
+
+        game3Parent.SetActive(true);
+        uiStartPanelGOArray[2].SetActive(true);
+        uiOngoingPanelGOArray[2].SetActive(false);
+        uiGameOverPanelGOArray[2].SetActive(false);
+
+        isGame3Over = false;
         currentScore = 0;
     }
 
@@ -325,10 +390,50 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void OnGame3PlayClicked()
+    {
+
+        if (isTournament)
+        {
+
+            //Increment tournament play count
+            StartCoroutine(Manager.instance.webManager.IncrementTournamentPlayCountCoroutine(Manager.instance.tournamentDataManager.tournamentId));
+
+        }
+        else
+        {
+            //Increment game play count
+            StartCoroutine(Manager.instance.webManager.IncrementGamePlayCountCoroutine(Manager.instance.gameDataManager.gameId));
+        }
+
+
+        uiStartPanelGOArray[2].SetActive(false);
+        uiOngoingPanelGOArray[2].SetActive(true);
+
+        currentScore = 0;
+        uiOngoingScoreTextArray[2].text = currentScore.ToString();
+
+        ResetGame3SpawnVariables();
+
+        game3BackgroundAudioSource.loop = true;
+        game3BackgroundAudioSource.Play();
+
+        StartCoroutine(WaitForXSecCoroutine(2));
+
+
+        game3Manager.isGameOver = false;
+        StartCoroutine(game3Manager.SpawnMoles());
+        StartCoroutine(game3Manager.AdjustDifficulty());
+
+
+    }
+
+
     public IEnumerator WaitForXSecCoroutine(float seconds)
     {
         yield return new WaitForSeconds(seconds);
     }
+
 
 
     public void ShowGameOver()
@@ -355,6 +460,16 @@ public class GameManager : MonoBehaviour
 
             }
         }
+        else if (Manager.instance.gameDataManager.gameTemplateId == 2)
+        {
+            if (isGame3Over == false)
+            {
+                isGame3Over = true;
+
+                StartCoroutine(ShowGame3OverCoroutine());
+
+            }
+        }
 
     }
 
@@ -373,18 +488,20 @@ public class GameManager : MonoBehaviour
         Debug.Log("-------------------------------------------------------------> Game OVER!!!");
 
 
-
         game1Player.canJump = false;
         game1Manager.canSpawn = false;
 
+        totalScore = totalScore + currentScore;
+
+
         if (isTournament)
         {
-            uiGameOverTotalScoreTextArray[0].text = (Manager.instance.userInfoManager.tournamentScore + currentScore).ToString();
+            uiGameOverTotalScoreTextArray[0].text = (totalScore).ToString();
 
         }
         else
         {
-            uiGameOverTotalScoreTextArray[0].text = (Manager.instance.userInfoManager.gameScore + currentScore).ToString();
+            uiGameOverTotalScoreTextArray[0].text = (totalScore).ToString();
 
         }
 
@@ -402,16 +519,19 @@ public class GameManager : MonoBehaviour
             //Storing tournament score for user
             yield return StartCoroutine(Manager.instance.webManager.StoreTournamentScoreCoroutine(Manager.instance.userInfoManager.userId,
                                                                                                   Manager.instance.tournamentDataManager.tournamentId,
-                                                                                                  Manager.instance.userInfoManager.tournamentScore + currentScore));
+                                                                                                  totalScore));
 
-            yield return StartCoroutine(Manager.instance.walletManager.ExecuteRecordScore(Manager.instance.tournamentDataManager.tournamentId.ToString(), (Manager.instance.userInfoManager.tournamentScore + currentScore).ToString()));
+            Manager.instance.userInfoManager.tournamentScore = totalScore;
+
+
+            yield return StartCoroutine(Manager.instance.walletManager.ExecuteRecordScore(Manager.instance.tournamentDataManager.tournamentId.ToString(), (Manager.instance.userInfoManager.tournamentScore).ToString()));
         
         
         }
         else
         {
             //Store Score on Server
-            yield return StartCoroutine(Manager.instance.webManager.UpdateGameScoreCoroutine(Manager.instance.userInfoManager.userId, Manager.instance.gameDataManager.gameId, Manager.instance.userInfoManager.gameScore + currentScore));
+            yield return StartCoroutine(Manager.instance.webManager.UpdateGameScoreCoroutine(Manager.instance.userInfoManager.userId, Manager.instance.gameDataManager.gameId, totalScore));
 
         }
 
@@ -448,15 +568,17 @@ public class GameManager : MonoBehaviour
         game2Manager.canSpawn = false;
         game2Player.rb.gravityScale = 0;
 
+        totalScore = totalScore + currentScore;
+
 
         if (isTournament)
         {
-            uiGameOverTotalScoreTextArray[1].text = (Manager.instance.userInfoManager.tournamentScore + currentScore).ToString();
+            uiGameOverTotalScoreTextArray[1].text = (totalScore).ToString();
 
         }
         else
         {
-            uiGameOverTotalScoreTextArray[1].text = (Manager.instance.userInfoManager.gameScore + currentScore).ToString();
+            uiGameOverTotalScoreTextArray[1].text = (totalScore).ToString();
 
         }
 
@@ -474,16 +596,19 @@ public class GameManager : MonoBehaviour
             //Storing tournament score for user
             yield return StartCoroutine(Manager.instance.webManager.StoreTournamentScoreCoroutine(Manager.instance.userInfoManager.userId,
                                                                                                   Manager.instance.tournamentDataManager.tournamentId,
-                                                                                                  Manager.instance.userInfoManager.tournamentScore + currentScore));
+                                                                                                  totalScore));
 
-            yield return StartCoroutine(Manager.instance.walletManager.ExecuteRecordScore(Manager.instance.tournamentDataManager.tournamentId.ToString(), (Manager.instance.userInfoManager.tournamentScore + currentScore).ToString()));
+            Manager.instance.userInfoManager.tournamentScore = totalScore;
+
+
+            yield return StartCoroutine(Manager.instance.walletManager.ExecuteRecordScore(Manager.instance.tournamentDataManager.tournamentId.ToString(), (Manager.instance.userInfoManager.tournamentScore).ToString()));
 
 
         }
         else
         {
             //Store Score on Server
-            yield return StartCoroutine(Manager.instance.webManager.UpdateGameScoreCoroutine(Manager.instance.userInfoManager.userId, Manager.instance.gameDataManager.gameId, Manager.instance.userInfoManager.gameScore + currentScore));
+            yield return StartCoroutine(Manager.instance.webManager.UpdateGameScoreCoroutine(Manager.instance.userInfoManager.userId, Manager.instance.gameDataManager.gameId, totalScore));
 
         }
 
@@ -499,6 +624,70 @@ public class GameManager : MonoBehaviour
 
         game2Player.transform.position = new Vector3(-1.25f, 0.35f, 0);
 
+
+    }
+
+
+    public IEnumerator ShowGame3OverCoroutine()
+    {
+        uiGameOverPlayAgainButtonGOArray[2].SetActive(false);
+        uiGameOverExitButtonGOArray[2].SetActive(false);
+
+        uiOngoingPanelGOArray[2].SetActive(false);
+        uiGameOverPanelGOArray[2].SetActive(true);
+
+
+        Debug.Log("-------------------------------------------------------------> Game OVER!!!");
+
+
+        totalScore = totalScore + currentScore;
+
+
+        if (isTournament)
+        {
+            uiGameOverTotalScoreTextArray[2].text = (totalScore).ToString();
+
+        }
+        else
+        {
+            uiGameOverTotalScoreTextArray[2].text = (totalScore).ToString();
+
+        }
+
+
+        uiGameOverScoreTextArray[2].text = currentScore.ToString();
+
+        game3BackgroundAudioSource.Stop();
+        game3BackgroundAudioSource.clip = gameOverAudioClip;
+        game3BackgroundAudioSource.loop = false;
+        game3BackgroundAudioSource.Play();
+
+        if (isTournament)
+        {
+            //Store torunamentScore on Server & Smart contract
+            //Storing tournament score for user
+            yield return StartCoroutine(Manager.instance.webManager.StoreTournamentScoreCoroutine(Manager.instance.userInfoManager.userId,
+                                                                                                  Manager.instance.tournamentDataManager.tournamentId,
+                                                                                                  totalScore));
+            
+            Manager.instance.userInfoManager.tournamentScore = totalScore;
+
+
+            yield return StartCoroutine(Manager.instance.walletManager.ExecuteRecordScore(Manager.instance.tournamentDataManager.tournamentId.ToString(), (Manager.instance.userInfoManager.tournamentScore).ToString()));
+
+
+        }
+        else
+        {
+            //Store Score on Server
+            yield return StartCoroutine(Manager.instance.webManager.UpdateGameScoreCoroutine(Manager.instance.userInfoManager.userId, Manager.instance.gameDataManager.gameId, totalScore));
+
+        }
+
+        uiGameOverPlayAgainButtonGOArray[2].SetActive(true);
+        uiGameOverExitButtonGOArray[2].SetActive(true);
+
+        ResetGame3SpawnVariables();
 
     }
 
@@ -640,6 +829,73 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void OnGame3ReplayClicked()
+    {
+
+        if (isTournament)
+        {
+
+            //Increment tournament play count
+            StartCoroutine(Manager.instance.webManager.IncrementTournamentPlayCountCoroutine(Manager.instance.tournamentDataManager.tournamentId));
+
+        }
+        else
+        {
+            //Increment game play count
+            StartCoroutine(Manager.instance.webManager.IncrementGamePlayCountCoroutine(Manager.instance.gameDataManager.gameId));
+        }
+
+
+
+        //Get user score for game
+        // - Store user game score
+        //yield return StartCoroutine(Manager.instance.webManager.GetOrCreateGameScoreCoroutine(Manager.instance.userInfoManager.userId, Manager.instance.gameDataManager.gameId));
+
+
+
+
+
+        if (isTournament)
+        {
+            totalScore = Manager.instance.userInfoManager.tournamentScore;
+        }
+        else
+        {
+            totalScore = Manager.instance.userInfoManager.gameScore;
+        }
+
+        uiTitleTotalScoreTextArray[2].text = totalScore.ToString();
+
+        currentScore = 0;
+        uiOngoingScoreTextArray[2].text = currentScore.ToString();
+
+        //Fetch total GameScore based on GameId
+        //Set titleTotalScoreText
+
+
+
+        uiGameOverPanelGOArray[2].SetActive(false);
+
+        game3BackgroundAudioSource.clip = backgroundAudioClip;
+        game3BackgroundAudioSource.loop = true;
+        game3BackgroundAudioSource.Play();
+
+        StartCoroutine(WaitForXSecCoroutine(2));
+
+
+        ResetGame3SpawnVariables();
+
+
+        uiStartPanelGOArray[2].SetActive(false);
+        uiOngoingPanelGOArray[2].SetActive(true);
+
+        isGame3Over = false;
+        game3Manager.isGameOver = false;
+        StartCoroutine(game3Manager.SpawnMoles());
+        StartCoroutine(game3Manager.AdjustDifficulty());
+
+    }
+
 
     public void ResetGame1CameraPosition()
     {
@@ -719,6 +975,53 @@ public class GameManager : MonoBehaviour
 
         }
 
+    }
+
+
+    public void OnGame3ExitClicked()
+    {
+
+
+        ResetGame3SpawnVariables();
+
+
+        uiStartPanelGOArray[2].SetActive(true);
+        uiOngoingPanelGOArray[2].SetActive(false);
+        uiGameOverPanelGOArray[2].SetActive(false);
+        game3Parent.SetActive(false);
+
+
+        if (isTournament)
+        {
+            Manager.instance.canvasManager.systemBarGO.SetActive(true);
+            Manager.instance.canvasManager.homeProfileTournamentCreatePanelGO.SetActive(true);
+            Manager.instance.canvasManager.tournamentPanelGO.SetActive(true);
+            Manager.instance.canvasManager.tournamentPanelHomeGO.SetActive(true);
+            Manager.instance.canvasManager.tournamentToggle.isOn = true;
+        }
+        else
+        {
+            Manager.instance.canvasManager.systemBarGO.SetActive(true);
+            Manager.instance.canvasManager.homeProfileTournamentCreatePanelGO.SetActive(true);
+            Manager.instance.canvasManager.homePanelGO.SetActive(true);
+            Manager.instance.canvasManager.homePanelHomeGO.SetActive(true);
+            Manager.instance.canvasManager.homeToggle.isOn = true;
+        }
+
+    }
+
+
+    public void ResetGame3SpawnVariables()
+    {
+        game3Manager.spawnInterval = 2.5f;   // Initial time between spawns
+        game3Manager.moleStayTime = 1.5f;  // Initial time mole stays visible
+        game3Manager.maxActiveMoles = 1;     // Initial max number of moles active at once
+        game3Manager.difficultIncrementTime = 10f;
+
+
+        // Lists to track holes used in the previous spawn cycle
+        game3Manager.lastGoodMoleHoles.Clear();
+        game3Manager.lastBadMoleHoles.Clear();
     }
 
 

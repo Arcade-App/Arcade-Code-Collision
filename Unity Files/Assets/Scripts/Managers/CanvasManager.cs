@@ -3047,9 +3047,9 @@ public class CanvasManager : MonoBehaviour
         }
 
         // Get the count of games, but limit to a maximum of 3
-        int maxGames = Mathf.Min(Manager.instance.gameDataManager.userGameIdList.Count, 3);
+        int maxGamesUserTop3 = Mathf.Min(Manager.instance.gameDataManager.userGameIdList.Count, 3);
 
-        if (maxGames == 0)
+        if (maxGamesUserTop3 == 0)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -3059,13 +3059,28 @@ public class CanvasManager : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < maxGames; i++)
+            for (int i = 0; i < maxGamesUserTop3; i++)
             {
                 profileMyGamesEmptyButton.SetActive(false);
 
                 int userGameTemplateIdInt = Manager.instance.gameDataManager.userGameTemplateIdList[i];
                 profileMyGamesButtonGOList[i].GetComponent<Image>().sprite = Manager.instance.gameDataManager.gameTemplateImageList[userGameTemplateIdInt];
                 profileMyGamesButtonGOList[i].GetComponentInChildren<TMP_Text>().text = Manager.instance.gameDataManager.userGameNameList[i];
+
+
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameId = Manager.instance.gameDataManager.userGameIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().userId = Manager.instance.userInfoManager.userId;
+
+                int gameTemplateId = Manager.instance.gameDataManager.userGameTemplateIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameTemplateId = gameTemplateId;
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameFaceId = Manager.instance.gameDataManager.userGameFaceIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameBackgroundId = Manager.instance.gameDataManager.userGameBackgroundIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameJumpAudioId = Manager.instance.gameDataManager.userGameJumpAudioIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameBGAudioId = Manager.instance.gameDataManager.userGameBGAudioIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameGameOverAudioId = Manager.instance.gameDataManager.userGameGameOverAudioIdList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gameGameName = Manager.instance.gameDataManager.userGameNameList[i];
+                profileMyGamesButtonGOList[i].GetComponent<ProfileTop3GameButton>().gamePlayCount = Manager.instance.gameDataManager.userGamePlayCountList[i];
+
 
                 profileMyGamesButtonGOList[i].SetActive(true);
 
@@ -3182,25 +3197,6 @@ public class CanvasManager : MonoBehaviour
     {
         profilePanelMyTournamentsPanelGO.SetActive(false);
     }
-
-    public void OnTopMyGamesButton1Clicked()
-    {
-        //launch 1st game
-
-    }
-
-    public void OnTopMyGamesButton2Clicked()
-    {
-        //launch 2nd game
-
-    }
-
-    public void OnTopMyGamesButton3Clicked()
-    {
-        //launch 3rd game
-
-    }
-
 
     public IEnumerator PopulateRecentTournamentProfilePanel()
     {

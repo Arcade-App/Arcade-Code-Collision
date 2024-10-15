@@ -14,12 +14,12 @@ public class Game2Obstacle : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        transform.Translate(Vector3.left * speed * Time.deltaTime);
-        if (transform.position.x <= -4.5f)
+        transform.Translate(Vector3.left * speed * Time.fixedDeltaTime);
+        if (transform.position.x <= -12f)
         {
-            transform.position = new Vector3(transform.position.x + 9f, transform.position.y, transform.position.z);
+            transform.position = new Vector3(transform.position.x + 23f, transform.position.y, transform.position.z);
         }
     }
 }

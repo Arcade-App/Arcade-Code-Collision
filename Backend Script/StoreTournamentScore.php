@@ -31,7 +31,7 @@ if ($stmt->num_rows > 0) {
     $stmt->fetch();
     
     // Add the new score to the existing score
-    $newScore = $existingScore + $score;
+    $newScore = $score;
 
     // Update the score in the database
     $updateStmt = $conn->prepare("UPDATE tournamentscores SET score = ? WHERE userId = ? AND tournamentId = ?");

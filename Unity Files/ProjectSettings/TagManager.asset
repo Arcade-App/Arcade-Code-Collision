@@ -8,6 +8,7 @@ TagManager:
   - Side Collider
   - Brick
   - Hoop
+  - Game2 Spike
   layers:
   - Default
   - TransparentFX
