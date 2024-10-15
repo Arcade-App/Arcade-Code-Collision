@@ -24,7 +24,7 @@ App is live on Aptos Testnet - [Aptos Contract Address](https://explorer.aptosla
 
 Demo Link: [https://arcade-web-aptos-demo.vercel.app/](https://arcade-web-aptos-demo.vercel.app/)
 
-Demo video: [https://youtu.be/1rCOWKMpNxQ](https://youtu.be/1rCOWKMpNxQ)
+Demo Video: [https://youtu.be/1rCOWKMpNxQ](https://youtu.be/1rCOWKMpNxQ)
 
 ---
 
